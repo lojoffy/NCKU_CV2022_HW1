@@ -36,7 +36,8 @@ from torch.utils.tensorboard import SummaryWriter
 from PIL import Image
 import imageio
 
-dataset_prefix = "/Users/blueshiner/git/3_Collections/29_CV_HW1/"
+#dataset_prefix = "/Users/blueshiner/git/3_Collections/29_CV_HW1/"
+dataset_prefix = "/app/ncku_cv2022_hw1/"
 folder_1 = dataset_prefix + "dataset/Q1_Image/"
 folder_2 = dataset_prefix + "dataset/Q2_Image/"
 folder_3 = dataset_prefix + "dataset/Q3_Image/"
