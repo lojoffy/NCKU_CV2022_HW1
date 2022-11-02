@@ -41,6 +41,7 @@ dataset_prefix = "/app/ncku_cv2022_hw1/"
 folder_1 = dataset_prefix + "dataset/Q1_Image/"
 folder_2 = dataset_prefix + "dataset/Q2_Image/"
 folder_3 = dataset_prefix + "dataset/Q3_Image/"
+folder_4 = dataset_prefix + "dataset/Q4_Images/"
 
 # ------- init setting -------
 st.set_page_config(
@@ -70,6 +71,7 @@ topic = st.selectbox("Select an assignment",
             '(1) Camera Calibration',
             '(2) Augmented Reality',
             '(3) Stereo Disparity Map',
+            '(4) SIFT - Keypoints',
             '(5) Training Cifar-10 Classifier Using VGG16')
         )
 
@@ -78,6 +80,8 @@ if 'state_1' not in st.session_state:
     st.session_state['state_1'] = 0
 if 'state_3' not in st.session_state:
     st.session_state['state_3'] = 0
+if 'state_4' not in st.session_state:
+    st.session_state['state_4'] = 0
 if 'state_5' not in st.session_state:
     st.session_state['state_5'] = 0
 
@@ -363,6 +367,68 @@ if topic == '(3) Stereo Disparity Map':
             st.image(img_map, channels="BGR")
         st.write(f"Disparity value at ({idx_x}, {idx_y}) is : {norm_disparity[idx_y, idx_x]}")
 
+# ------- end -------
+
+
+# ------- HW1 - 4 -------
+if topic == '(4) SIFT - Keypoints':
+    st.header("SIFT - Keypoints")
+
+    if st.button("Load traffics.png :"):
+        st.session_state.state_4 = 1
+    if st.session_state.state_4 >= 1:
+        cv_image_4_1 = cv2.imread(folder_4 + "traffics.png")
+        st.image(cv_image_4_1, channels="BGR")
+
+        cv_image_4_1_gray = cv2.cvtColor(cv_image_4_1, cv2.COLOR_BGR2GRAY)
+
+        detector_BRISK = cv2.BRISK_create()
+        bf_matcher = cv2.BFMatcher( cv2.NORM_HAMMING )
+
+        keypoint, descriptor = detector_BRISK.detectAndCompute(cv_image_4_1_gray, None)
+
+        cv_image_4_1_sift = cv2.drawKeypoints(cv_image_4_1.copy(), keypoint, cv_image_4_1.copy())
+
+        st.image(cv_image_4_1_sift)
+
+    if st.button("Load ambulance.png :"):
+        st.session_state.state_4 = 2
+    if st.session_state.state_4 >= 2:
+        cv_image_4_2 = cv2.imread(folder_4 + "ambulance.png")
+        st.image(cv_image_4_2, channels="BGR")
+
+        cv_image_4_2_gray = cv2.cvtColor(cv_image_4_2, cv2.COLOR_BGR2GRAY)
+
+        keypoint_2, descriptor_2 = detector_BRISK.detectAndCompute(cv_image_4_2_gray, None)
+
+        matches = bf_matcher.knnMatch(descriptor, descriptor_2, k=2)
+
+
+        idx_4_1 = st.slider('Set an sensitive value', 0.0, 1.0, 0.01)
+
+        keypoint_set_1, keypoint_set_2 = [], []
+        for m in matches:
+            if m[0].distance < m[1].distance * idx_4_1:
+                keypoint_set_1.append( keypoint[m[0].queryIdx] )
+                keypoint_set_2.append( keypoint_2[m[0].trainIdx] )
+
+        cv_image_4_3 = np.zeros((cv_image_4_1.shape[0], cv_image_4_1.shape[1] + cv_image_4_2.shape[1], 3), np.uint8)
+        cv_image_4_3[:cv_image_4_1.shape[0], :cv_image_4_1.shape[1]] = cv_image_4_1
+        cv_image_4_3[:cv_image_4_2.shape[0], cv_image_4_1.shape[1]: cv_image_4_1.shape[1] + cv_image_4_2.shape[1]] = cv_image_4_2
+
+        position_set_1, position_set_2 = [], []
+        for kpp in zip(keypoint_set_1, keypoint_set_2):
+            position_set_1.append(np.int32(kpp[0].pt))
+            position_set_2.append(np.int32(np.array(kpp[1].pt) + [cv_image_4_1.shape[1], 0]))
+
+        st.image(cv_image_4_3, channels="BGR")
+
+        for (x1, y1), (x2, y2) in zip(position_set_1, position_set_2):
+            cv2.circle(cv_image_4_3, (x1,y1), 2, (0, 255, 0), 2)
+            cv2.circle(cv_image_4_3, (x2,y2), 2, (0, 255, 0), 2)
+            cv2.line(cv_image_4_3, (x1,y1), (x2,y2), (0, 255, 255))
+
+        st.image(cv_image_4_3, channels="BGR")
 # ------- end -------
 
 
