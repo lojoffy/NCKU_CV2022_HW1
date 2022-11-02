@@ -41,7 +41,7 @@ dataset_prefix = "/app/ncku_cv2022_hw1/"
 folder_1 = dataset_prefix + "dataset/Q1_Image/"
 folder_2 = dataset_prefix + "dataset/Q2_Image/"
 folder_3 = dataset_prefix + "dataset/Q3_Image/"
-folder_4 = dataset_prefix + "dataset/Q4_Images/"
+folder_4 = dataset_prefix + "dataset/Q4_images/"
 
 # ------- init setting -------
 st.set_page_config(
