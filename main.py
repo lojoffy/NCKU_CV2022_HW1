@@ -463,7 +463,8 @@ if topic == '(5) Training Cifar-10 Classifier Using VGG16':
         if st.button("Show Samples:"):
             dataiter = iter(testloader)
             for i in range(9):
-                images, labels = dataiter.next()
+                #images, labels = dataiter.next()
+                images, labels = next(dataiter)
                 image = images / 2 + 0.5
                 image = image / image.max() * 255
                 image = image.squeeze(0).permute(1, 2, 0).repeat_interleave(4, dim=0).repeat_interleave(4, dim=1).numpy().astype(int)
